@@ -1,0 +1,38 @@
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <meta charset="UTF-8">
+        <title>Contact</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                      <a class="navbar-brand" href="#">Car Dealership</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="btn btn-link" href="{% url 'djangoapp:about' %}">About us</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:contact' %}">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class='p-3'>
+        <h1>
+            Address
+        </h1>
+        <p>Test company</p>
+        <p>Address</p>
+        <p>City, state - PIN</p>
+        <br />
+        <br />
+        <h1>
+            Contact Number
+        </h1>
+        <p>+91 11111111111</p>
+        <p>+1 111111111110</p>
+    </div>
+    </body>
+</html>

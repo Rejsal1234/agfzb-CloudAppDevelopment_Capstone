@@ -1,11 +1,11 @@
   applications:
-  - name: djangoapp
+  - name: car-dealer-v03a
     routes:
-      - route: $HOST.$DOMAIN
+      - route: car-dealer-v03a.eu-gb.cf.appdomain.cloud
     memory: 128M
     buildpack: python_buildpack
-  - name: djangoapp-nginx
+  - name: car-dealer-v03a-nginx
     routes:
-      - route: $HOST.$DOMAIN/static
+      - route: car-dealer-v03a.eu-gb.cf.appdomain.cloud/static
     memory: 128M
     buildpack: staticfile_buildpack
