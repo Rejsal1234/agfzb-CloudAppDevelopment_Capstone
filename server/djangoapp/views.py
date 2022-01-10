@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -103,6 +103,29 @@ def get_dealer_details(request, dealer_id):
         # return render(request, 'djangoapp/index.html', context)
 
 # Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+def add_review(request, dealer_id):
+    user = request.user
+    if user.is_authenticated:
+        if request.method == "POST":
+            review = dict()
+            review["time"] = datetime.utcnow().isoformat()
+            review["dealership"] = dealer_id
+            review["review"] = request.POST['review']
+            review["car_make"] = request.POST['car_make']
+            review["car_model"] = request.POST['car_model']
+            review["car_year"] = request.POST['car_year']
+            review["name"] = request.POST['name']
+            review["purchase"] = True
+            review["purchase_date"] = request.POST['purchase_date']
+            payload = {}
+            payload['review'] = review
+            url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/review"
+            response = post_request(url=url, json_payload=payload, kwargs={})
+            return HttpResponse(response)
+            # return render(request, 'djangoapp/index.html', context)
+        else:
+            print('Invalid request')
+    else:
+        print('Unauthorized')
+
 
