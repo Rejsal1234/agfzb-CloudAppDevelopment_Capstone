@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-# from .restapis import related methods
+from .restapis import get_dealers_from_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -78,10 +78,16 @@ def logout_request(request):
     return redirect('djangoapp:index')
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
-def get_dealerships(request):
+def get_dealerships(request, state_params=''):
     context = {}
-    if request.method == "GET":
-        return render(request, 'djangoapp/index.html', context)
+    if request.method == "GET" and request.method == "GET":
+        url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/dealership"
+        # Get dealers from the URL
+        dealerships = get_dealers_from_cf(url, state_params=state_params)
+        # Concat all dealer's short name
+        dealer_names = ', '.join([dealer.short_name for dealer in dealerships])
+        return HttpResponse(dealer_names)
+        # return render(request, 'djangoapp/index.html', context)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
