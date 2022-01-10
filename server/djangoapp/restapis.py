@@ -8,15 +8,27 @@ def get_request(url, **kwargs):
     print("GET from {} ".format(url))
     try:
         # Call get method of requests library with URL and parameters
-        response = requests.get(url, headers={'Content-Type': 'application/json'},
+        if "api_key" in kwargs:
+            # Basic authentication GET
+            params = dict()
+            params["text"] = kwargs["text"]
+            params["version"] = kwargs["version"]
+            params["features"] = kwargs["features"]
+            params["return_analyzed_text"] = kwargs["return_analyzed_text"]
+            print(params)
+            response = requests.get(url, headers={'Content-Type': 'application/json'},
+                                    params=params, auth=HTTPBasicAuth('apikey', kwargs["api_key"]))
+        else:
+            # no authentication GET
+            response = requests.get(url, headers={'Content-Type': 'application/json'},
                                     params=kwargs)
+        status_code = response.status_code
+        print("With status {} ".format(status_code))
+        json_data = json.loads(response.text)
+        return json_data
     except:
         # If any error occurs
         print("Network exception occurred")
-    status_code = response.status_code
-    print("With status {} ".format(status_code))
-    json_data = json.loads(response.text)
-    return json_data
 
 
 
@@ -60,16 +72,19 @@ def get_dealer_reviews_from_cf(url, dealer_id, **kwargs):
             dealer_obj = DealerReview(dealership=dealer_doc["dealership"], name=dealer_doc["name"], purchase=dealer_doc["purchase"],
                                    id=dealer_doc["id"], review=dealer_doc["review"], purchase_date=dealer_doc["purchase_date"],
                                    car_make=dealer_doc["car_make"],
-                                   car_model=dealer_doc["car_model"], car_year=dealer_doc["car_year"])
+                                   car_model=dealer_doc["car_model"], car_year=dealer_doc["car_year"], sentiment='')
             results.append(dealer_obj)
 
     return results
 
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
-# def analyze_review_sentiments(text):
-# - Call get_request() with specified arguments
-# - Get the returned sentiment label such as Positive or Negative
+def analyze_review_sentiments(text):
+    url = "https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/d327b4ae-971c-4980-8a2f-6401f8b0efbb"
+    api_key = "44i9SDx2LHKV3-7fRiLIxZmHgCB78Xcp6-DLkDFyGOwl"
+    response = get_request(url, text=text, api_key=api_key, version='2021-08-01', features='sentiment', return_analyzed_text=True)
+    print(response)
+    return response
 
 
 
