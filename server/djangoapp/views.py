@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
+from .models import CarModel
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
 from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request, get_request
@@ -114,20 +115,32 @@ def add_review(request, dealer_id):
     if request.method == 'GET':
         dealer_url = url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/dealership"
         dealer = get_request(dealer_url, dealer_id=dealer_id)
+        cars = CarModel.objects.all()
+        context['cars'] = cars
         context['dealer'] = dealer['dealer']
         return render(request, 'djangoapp/add_review.html', context)
     if user.is_authenticated:
         if request.method == "POST":
             review = dict()
+            car = get_object_or_404(CarModel, pk=request.POST['car'])
+            is_purchased = False
+            if request.POST['purchase']:
+                is_purchased = True
+            else:
+                is_purchased = False
+
+            dealer_url = url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/dealership"
+            dealer = get_request(dealer_url, dealer_id=dealer_id)
+            print(dealer['dealer'])
             review["time"] = datetime.utcnow().isoformat()
             review["dealership"] = dealer_id
             review["review"] = request.POST['review']
-            review["car_make"] = request.POST['car_make']
-            review["car_model"] = request.POST['car_model']
-            review["car_year"] = request.POST['car_year']
-            review["name"] = request.POST['name']
-            review["purchase"] = True
-            review["purchase_date"] = request.POST['purchase_date']
+            review["car_make"] = car.make.name
+            review["car_model"] = car.name
+            review["car_year"] = car.year.strftime("%Y")
+            review["name"] = dealer['dealer']['full_name']
+            review["purchase"] = is_purchased
+            review["purchase_date"] = request.POST['purchasedate']
             payload = {}
             payload['review'] = review
             url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/review"

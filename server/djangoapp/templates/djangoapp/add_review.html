@@ -11,26 +11,62 @@
 
 </head>
     <body>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                      <a class="navbar-brand" href="#">Car Dealership</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="btn btn-link" href="{% url 'djangoapp:about' %}">About us</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:contact' %}">Contact</a>
+
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Username" name="username" >
+                                <input type="password" class="form-control" placeholder="Password" name="psw" >
+                                <button class="btn btn-primary" type="submit">Login</button>
+                                <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                            </div>
+                        </form>
+                    </li>
+                    {% endif %}
+                </li>
+                </ul>
+            </div>
+        </nav>
         <div class='p-3'>
-            <form class="form-inline" action="{% url 'djangoapp:add_review' dealer_id %}" method="post">
+            <h2>Add Review for <strong>{{dealer.full_name}}</strong></h2>
+            <form class="form-inline" action="{% url 'djangoapp:add_review' dealer.id %}" method="post">
                 {% csrf_token %}
-                <div class="input-group">
-                    <h3>Enter the review content:</h3>
+                <div class='pt-3'>
+                    <h4>Enter the review content:</h4>
                     <textarea class="form-control" id="review" name="review" rows="2" required></textarea>
-                    <div class='row'>
+                    <div class='row pt-3 px-3'>
                     <input class="form-check-input" type="checkbox" name="purchase" id="purchase">
                     <p>Has purchased the car from {{dealer.full_name}}? (select purchased car information below if checked)</p>    
                     </div>
-                    <div class='row'>
-                    <h3>Select your car (model-make-year):</h3>
+                    <div class='row pt-3 px-3'>
+                    <h4>Select your car (model-make-year):</h4>
                     <select name="car" id="car" class="form-select" required>
                         {% for car in cars %}
                             <option selected value={{car.id}}>{{car.name}}-{{car.make.name}}-{{ car.year|date:"Y" }}</option>
                         {% endfor %}
                    </select>
                     </div>
-                   <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate">
-                    <button class="btn btn-primary" type="submit">Add Review</button>
+                    <div class="py-3">
+                    <h4>Select your Purchase Date:</h4>
+                    <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate" required >
+                    </div>
+                   <button class="btn btn-primary" type="submit">Submit</button>
                 </div>
             </form>
         </div>

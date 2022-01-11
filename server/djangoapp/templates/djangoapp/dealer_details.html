@@ -63,7 +63,9 @@
             </div>
         {% endfor %}
         </div>
-        <a class='btn btn-primary' href="{% url 'djangoapp:add_review' dealer_id %}">Add New Review</a>
+        <div class="pt-4">
+            <a class='btn btn-primary' href="{% url 'djangoapp:add_review' dealer.id %}">Add New Review</a>
+        </div>
     </div>
     </body>
 
