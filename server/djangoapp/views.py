@@ -106,6 +106,7 @@ def get_dealer_details(request, dealer_id):
 
 # Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
+    context = {}
     user = request.user
     if user.is_authenticated:
         if request.method == "POST":
@@ -122,12 +123,13 @@ def add_review(request, dealer_id):
             payload = {}
             payload['review'] = review
             url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/review"
-            response = post_request(url=url, json_payload=payload, kwargs={})
-            return HttpResponse(response)
-            # return render(request, 'djangoapp/index.html', context)
+            post_request(url=url, json_payload=payload, kwargs={})
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
         else:
-            print('Invalid request')
+            context['error'] = 'Invalid request'
+            return render(request, 'djangoapp/add_review.html', context)
     else:
-        print('Unauthorized')
+        context['error'] = 'Unauthorized'
+        return render(request, 'djangoapp/add_review.html', context)
 
 
