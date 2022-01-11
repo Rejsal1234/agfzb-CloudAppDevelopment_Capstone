@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request, get_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -97,10 +97,13 @@ def get_dealerships(request, state_params=''):
 def get_dealer_details(request, dealer_id):
     context = {}
     if request.method == "GET" and request.method == "GET":
+        dealer_url = url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/dealership"
+        dealer = get_request(dealer_url, dealer_id=dealer_id)
         url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/review"
         # Get reviews from the URL
         reviews = get_dealer_reviews_from_cf(url, dealer_id=dealer_id)
         # return HttpResponse(reviews)
+        context['dealer'] = dealer['dealer']
         context['reviews'] = reviews
         return render(request, 'djangoapp/dealer_details.html', context)
 
@@ -108,6 +111,11 @@ def get_dealer_details(request, dealer_id):
 def add_review(request, dealer_id):
     context = {}
     user = request.user
+    if request.method == 'GET':
+        dealer_url = url = "https://7373a815.eu-gb.apigw.appdomain.cloud/api/dealership"
+        dealer = get_request(dealer_url, dealer_id=dealer_id)
+        context['dealer'] = dealer['dealer']
+        return render(request, 'djangoapp/add_review.html', context)
     if user.is_authenticated:
         if request.method == "POST":
             review = dict()
